@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+    <property name="PATTERN_VALUE" value="%boldGreen([%d{yyyy-MM-dd HH:mm:ss.sss}]) %highlight([%-5level]) %magenta([%thread]) %logger %msg%n"/>
+    <property name="ROLLING_FILE_PATH" value="logs/debug_%d{yyyy-MM-dd}.log" />
+    <property name="FILE_NAME" value="logs/debug.log"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <encoder>
+            <pattern>${PATTERN_VALUE}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${FILE_NAME}</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${ROLLING_FILE_PATH}
+            </fileNamePattern>
+            <maxHistory>
+                30
+            </maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.sss}] [%-5level] [%thread] %logger %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

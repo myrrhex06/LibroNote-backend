@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
 
-    <property name="PATTERN_VALUE" value="%boldGreen([%d{yyyy-MM-dd HH:mm:ss.sss}]) %highlight([%-5level]) %magenta([%thread]) %logger %msg%n"/>
+    <property name="PATTERN_VALUE" value="%boldGreen([%d{yyyy-MM-dd HH:mm:ss.SSS}]) %highlight([%-5level]) %magenta([%thread]) %logger %msg%n"/>
     <property name="ROLLING_FILE_PATH" value="logs/debug_%d{yyyy-MM-dd}.log" />
     <property name="FILE_NAME" value="logs/debug.log"/>
 
@@ -26,7 +26,7 @@
             </maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss.sss}] [%-5level] [%thread] %logger %msg%n</pattern>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%thread] %logger %msg%n</pattern>
         </encoder>
     </appender>
 

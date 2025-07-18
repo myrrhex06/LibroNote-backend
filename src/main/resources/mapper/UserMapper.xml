@@ -31,6 +31,32 @@
         LIMIT #{page}, #{size}
     </select>
 
+    <select id="findByEmail" parameterType="string" resultType="User">
+        SELECT
+            u.user_seq,
+            u.email,
+            u.password,
+            u.role,
+            u.nickname,
+            u.provider,
+            u.created_at,
+            u.modified_at
+        FROM USER_INFO u
+        WHERE u.email = #{email}
+    </select>
+
+    <select id="existsEmail" parameterType="string" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM USER_INFO u WHERE u.email = #{email}
+        )
+    </select>
+
+    <select id="existsNickname" parameterType="string" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM USER_INFO u WHERE u.nickname = #{nickname}
+        )
+    </select>
+
     <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userSeq">
         INSERT INTO USER_INFO(email, password, role, nickname, provider, created_at, modified_at)
         VALUES(#{email}, #{password}, #{role}, #{nickname}, #{provider}, NOW(), NOW())

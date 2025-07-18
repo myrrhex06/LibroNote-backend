@@ -13,7 +13,13 @@ public interface UserMapper {
 
     List<User> getUserList(@Param("page") int page, @Param("size") int size);
 
+    User findByEmail(String email);
+
     int insertUser(User user);
 
     int deleteUser(Long userSeq);
+
+    boolean existsEmail(String email);
+    
+    boolean existsNickname(String nickname);
 }

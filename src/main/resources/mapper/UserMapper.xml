@@ -6,38 +6,38 @@
 <mapper namespace="com.libronote.mapper.UserMapper">
     <select id="getUserDetail" parameterType="Long" resultType="User">
         SELECT
-        u.userSeq,
+        u.user_seq,
         u.email,
         u.password,
         u.role,
         u.nickname,
         u.provider,
-        u.createdAt,
-        u.modifiedAt
+        u.created_at,
+        u.modified_at
         FROM USER_INFO u
-        WHERE u.userSeq = #{userSeq}
+        WHERE u.user_seq = #{userSeq}
     </select>
 
     <select id="getUserList" resultType="User">
         SELECT
-            u.userSeq,
+            u.user_seq,
             u.email,
             u.role,
             u.nickname,
             u.provider,
-            u.createdAt,
-            u.modifiedAt
+            u.created_at,
+            u.modified_at
         FROM USER_INFO u
         LIMIT #{page}, #{size}
     </select>
 
     <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userSeq">
-        INSERT INTO USER_INFO(email, password, role, nickname, provider, createdAt, modifiedAt)
+        INSERT INTO USER_INFO(email, password, role, nickname, provider, created_at, modified_at)
         VALUES(#{email}, #{password}, #{role}, #{nickname}, #{provider}, NOW(), NOW())
     </insert>
 
     <delete id="deleteUser" parameterType="Long">
         DELETE FROM USER_INFO u
-        WHERE u.userSeq = #{userSeq}
+        WHERE u.user_seq = #{userSeq}
     </delete>
 </mapper>

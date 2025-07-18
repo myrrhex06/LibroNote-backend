@@ -30,6 +30,8 @@
         </encoder>
     </appender>
 
+    <logger name="com.libronote" level="DEBUG"/>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>

@@ -1,7 +1,7 @@
 package com.libronote.controller;
 
 import com.libronote.controller.request.RegisterRequest;
-import com.libronote.controller.request.UserResponse;
+import com.libronote.controller.response.UserResponse;
 import com.libronote.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

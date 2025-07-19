@@ -3,7 +3,7 @@ package com.libronote.service;
 import com.libronote.common.enums.Provider;
 import com.libronote.common.enums.Role;
 import com.libronote.controller.request.RegisterRequest;
-import com.libronote.controller.request.UserResponse;
+import com.libronote.controller.response.UserResponse;
 import com.libronote.domain.User;
 import com.libronote.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,12 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
+    /**
+     * 사용자 회원가입 처리 메서드
+     *
+     * @param request 회원가입 요청 객체
+     * @return UserResponse
+     */
     public UserResponse register(RegisterRequest request){
         if(userMapper.existsEmail(request.getEmail())){
             throw new RuntimeException("존재하는 이메일입니다.");

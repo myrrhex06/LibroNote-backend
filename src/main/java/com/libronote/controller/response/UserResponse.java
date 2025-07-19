@@ -1,11 +1,9 @@
-package com.libronote.controller.request;
+package com.libronote.controller.response;
 
 import com.libronote.common.enums.Provider;
 import com.libronote.common.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

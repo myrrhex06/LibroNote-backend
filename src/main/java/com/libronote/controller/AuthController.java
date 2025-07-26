@@ -1,6 +1,8 @@
 package com.libronote.controller;
 
 import com.libronote.common.exception.handle.response.ExceptionResponse;
+import com.libronote.common.wrapper.ResponseWrapper;
+import com.libronote.common.wrapper.ResponseWrapperUtils;
 import com.libronote.controller.request.LoginRequest;
 import com.libronote.controller.request.RegisterRequest;
 import com.libronote.controller.response.LoginResponse;
@@ -30,7 +32,7 @@ public class AuthController {
     @Operation(summary = "사용자 회원가입 API", description = "사용자 회원가입 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "회원가입 성공 시 반환"),
             @ApiResponse(responseCode = "409", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
@@ -40,7 +42,7 @@ public class AuthController {
             }, description = "회원가입에 실패했을 경우 반환")
     })
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(
+    public ResponseEntity<ResponseWrapper> register(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
                 description = "사용자 회원가입 요청 객체",
                 required = true,
@@ -48,13 +50,13 @@ public class AuthController {
         )
         @RequestBody RegisterRequest request
     ){
-        return ResponseEntity.ok(authService.register(request));
+        return ResponseWrapperUtils.success("success", authService.register(request));
     }
 
     @Operation(summary = "사용자 로그인 API", description = "사용자 로그인 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "성공 시 반환"),
             @ApiResponse(responseCode = "401", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
@@ -67,7 +69,7 @@ public class AuthController {
             }, description = "토큰 생성에 실패했을 경우 반환")
     })
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(
+    public ResponseEntity<ResponseWrapper> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     description = "로그인 요청 객체",
@@ -75,7 +77,7 @@ public class AuthController {
             )
             @RequestBody LoginRequest loginRequest
     ){
-        return ResponseEntity.ok(authService.login(loginRequest));
+        return ResponseWrapperUtils.success("success", authService.login(loginRequest));
     }
 
 }

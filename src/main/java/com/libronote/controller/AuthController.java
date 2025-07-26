@@ -1,6 +1,8 @@
 package com.libronote.controller;
 
+import com.libronote.controller.request.LoginRequest;
 import com.libronote.controller.request.RegisterRequest;
+import com.libronote.controller.response.LoginResponse;
 import com.libronote.controller.response.UserResponse;
 import com.libronote.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,4 +43,23 @@ public class AuthController {
     ){
         return ResponseEntity.ok(authService.register(request));
     }
+
+    @Operation(summary = "사용자 로그인 API", description = "사용자 로그인 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class))
+            }, description = "성공 시 반환")
+    })
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "로그인 요청 객체",
+                    content = @Content(schema = @Schema(implementation = LoginRequest.class))
+            )
+            @RequestBody LoginRequest loginRequest
+    ){
+        return ResponseEntity.ok(authService.login(loginRequest));
+    }
+
 }

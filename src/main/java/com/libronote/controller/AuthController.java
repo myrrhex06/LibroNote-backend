@@ -1,5 +1,6 @@
 package com.libronote.controller;
 
+import com.libronote.common.exception.handle.response.ExceptionResponse;
 import com.libronote.controller.request.LoginRequest;
 import com.libronote.controller.request.RegisterRequest;
 import com.libronote.controller.response.LoginResponse;
@@ -30,7 +31,13 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))
-            }, description = "회원가입 성공 시 반환")
+            }, description = "회원가입 성공 시 반환"),
+            @ApiResponse(responseCode = "409", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            }, description = "이미 존재하는 닉네임, 이메일일 경우 반환"),
+            @ApiResponse(responseCode = "500", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            }, description = "회원가입에 실패했을 경우 반환")
     })
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(
@@ -48,7 +55,16 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class))
-            }, description = "성공 시 반환")
+            }, description = "성공 시 반환"),
+            @ApiResponse(responseCode = "401", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            }, description = "비밀번호가 틀렸을 경우 반환"),
+            @ApiResponse(responseCode = "404", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            }, description = "사용자를 찾지 못했을 경우 반환"),
+            @ApiResponse(responseCode = "500", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+            }, description = "토큰 생성에 실패했을 경우 반환")
     })
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(

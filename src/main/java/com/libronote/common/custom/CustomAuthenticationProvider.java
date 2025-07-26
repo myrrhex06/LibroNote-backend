@@ -1,5 +1,6 @@
 package com.libronote.common.custom;
 
+import com.libronote.common.exception.PasswordNotMatchesException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -30,7 +31,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
 
         if(!passwordEncoder.matches(password, customUserDetails.getPassword())) {
-            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+            throw new PasswordNotMatchesException("비밀번호가 일치하지 않습니다.");
         }
 
         log.debug("CustomUserDetails : {}", customUserDetails.getAuthorities());

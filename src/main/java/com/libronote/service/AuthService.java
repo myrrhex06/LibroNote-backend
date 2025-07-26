@@ -3,6 +3,9 @@ package com.libronote.service;
 import com.libronote.common.custom.CustomUserDetails;
 import com.libronote.common.enums.Provider;
 import com.libronote.common.enums.Role;
+import com.libronote.common.exception.AlreadyRegistrationException;
+import com.libronote.common.exception.RefreshTokenInsertFailException;
+import com.libronote.common.exception.RegistrationException;
 import com.libronote.common.jwt.AccessTokenProvider;
 import com.libronote.common.jwt.RefreshTokenProvider;
 import com.libronote.controller.request.LoginRequest;
@@ -19,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +46,11 @@ public class AuthService {
      */
     public UserResponse register(RegisterRequest request){
         if(userMapper.existsEmail(request.getEmail())){
-            throw new RuntimeException("존재하는 이메일입니다.");
+            throw new AlreadyRegistrationException("존재하는 이메일입니다.");
         }
 
         if(userMapper.existsNickname(request.getNickname())){
-            throw new RuntimeException("존재하는 닉네임입니다.");
+            throw new AlreadyRegistrationException("존재하는 닉네임입니다.");
         }
 
         log.debug("회원가입 요청: {}", request.getEmail());
@@ -63,7 +67,7 @@ public class AuthService {
         log.debug("User 기본키 : {}", user.getUserSeq());
 
         if(0 > insertElementCount){
-            throw new RuntimeException("회원가입에 실패하였습니다.");
+            throw new RegistrationException("회원가입에 실패하였습니다.");
         }
 
         return UserResponse.builder()
@@ -95,7 +99,7 @@ public class AuthService {
         User user = userMapper.findByEmail(customUserDetails.getUsername());
 
         if(user == null){
-            throw new RuntimeException("사용자를 찾지 못했습니다.");
+            throw new UsernameNotFoundException("사용자를 찾지 못했습니다.");
         }
 
         String accessToken = accessTokenProvider.createToken(customUserDetails);
@@ -104,7 +108,7 @@ public class AuthService {
         int refreshInsertResult = refreshTokenMapper.insertRefreshToken(refreshToken);
 
         if(refreshInsertResult != 1){
-            throw new RuntimeException("토큰 생성에 문제가 발생했습니다.");
+            throw new RefreshTokenInsertFailException("토큰 생성에 문제가 발생했습니다.");
         }
 
         return LoginResponse.builder()

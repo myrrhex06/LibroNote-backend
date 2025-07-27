@@ -10,9 +10,6 @@ import lombok.*;
 @Builder
 public class ExceptionResponse {
 
-    @Schema(description = "상태 코드")
-    private int status;
-
     @Schema(description = "예외 메시지")
     private String message;
 }

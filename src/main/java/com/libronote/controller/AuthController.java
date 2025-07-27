@@ -35,10 +35,10 @@ public class AuthController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "회원가입 성공 시 반환"),
             @ApiResponse(responseCode = "409", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "이미 존재하는 닉네임, 이메일일 경우 반환"),
             @ApiResponse(responseCode = "500", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "회원가입에 실패했을 경우 반환")
     })
     @PostMapping("/register")
@@ -59,13 +59,13 @@ public class AuthController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "성공 시 반환"),
             @ApiResponse(responseCode = "401", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "비밀번호가 틀렸을 경우 반환"),
             @ApiResponse(responseCode = "404", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "사용자를 찾지 못했을 경우 반환"),
             @ApiResponse(responseCode = "500", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "토큰 생성에 실패했을 경우 반환")
     })
     @PostMapping("/login")

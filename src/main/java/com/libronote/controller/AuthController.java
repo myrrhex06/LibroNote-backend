@@ -4,6 +4,7 @@ import com.libronote.common.exception.handle.response.ExceptionResponse;
 import com.libronote.common.wrapper.ResponseWrapper;
 import com.libronote.common.wrapper.ResponseWrapperUtils;
 import com.libronote.controller.request.LoginRequest;
+import com.libronote.controller.request.RefreshRequest;
 import com.libronote.controller.request.RegisterRequest;
 import com.libronote.controller.response.LoginResponse;
 import com.libronote.controller.response.UserResponse;
@@ -80,4 +81,32 @@ public class AuthController {
         return ResponseWrapperUtils.success("success", authService.login(loginRequest));
     }
 
+    @Operation(summary = "토큰 재발급 API", description = "토큰 재발급 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "성공 시 반환"),
+            @ApiResponse(responseCode = "400", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "사용이 불가능한 토큰/만료된 토큰일 경우 반환"),
+            @ApiResponse(responseCode = "404", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "토큰을 찾을 수 없을 경우 반환"),
+            @ApiResponse(responseCode = "500", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "토큰 생성/업데이트에 문제가 발생했을 경우 반환")
+
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<ResponseWrapper> refresh(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "토큰 재발급 요청 객체",
+                    content = @Content(schema = @Schema(implementation = RefreshRequest.class))
+            )
+            @RequestBody RefreshRequest refreshRequest
+    ){
+
+        return ResponseWrapperUtils.success("success", authService.refresh(refreshRequest));
+    }
 }

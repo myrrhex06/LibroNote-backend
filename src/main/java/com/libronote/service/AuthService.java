@@ -3,12 +3,11 @@ package com.libronote.service;
 import com.libronote.common.custom.CustomUserDetails;
 import com.libronote.common.enums.Provider;
 import com.libronote.common.enums.Role;
-import com.libronote.common.exception.AlreadyRegistrationException;
-import com.libronote.common.exception.RefreshTokenInsertFailException;
-import com.libronote.common.exception.RegistrationException;
+import com.libronote.common.exception.*;
 import com.libronote.common.jwt.AccessTokenProvider;
 import com.libronote.common.jwt.RefreshTokenProvider;
 import com.libronote.controller.request.LoginRequest;
+import com.libronote.controller.request.RefreshRequest;
 import com.libronote.controller.request.RegisterRequest;
 import com.libronote.controller.response.LoginResponse;
 import com.libronote.controller.response.UserResponse;
@@ -25,6 +24,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -105,9 +106,67 @@ public class AuthService {
         String accessToken = accessTokenProvider.createToken(customUserDetails);
         RefreshToken refreshToken = refreshTokenProvider.createRefreshToken(customUserDetails);
 
+        if(refreshTokenMapper.existsRefreshToken(user.getUserSeq())){
+            RefreshToken findedRefreshToken = refreshTokenMapper.getRefreshTokenByUserSeq(user.getUserSeq());
+            refreshTokenMapper.unUseRefreshToken(findedRefreshToken.getTokenSeq());
+        }
+
         int refreshInsertResult = refreshTokenMapper.insertRefreshToken(refreshToken);
 
         if(refreshInsertResult != 1){
+            throw new RefreshTokenInsertFailException("토큰 생성에 문제가 발생했습니다.");
+        }
+
+        return LoginResponse.builder()
+                .userSeq(user.getUserSeq())
+                .nickname(user.getNickname())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken.getTokenValue())
+                .build();
+    }
+
+    /**
+     * 토큰 재발급 처리 메서드
+     *
+     * @param refreshRequest 토큰 재발급 요청 메서드
+     * @return LoginResponse
+     */
+    public LoginResponse refresh(RefreshRequest refreshRequest) {
+        RefreshToken originRefreshToken = refreshTokenMapper.getRefreshToken(refreshRequest.getRefreshToken());
+        if(originRefreshToken == null){
+            throw new RefreshTokenNotFoundException("해당 토큰을 찾을 수 없습니다.");
+        }
+
+        if(originRefreshToken.getUseYn().equals("N")){
+            throw new InvalidRefreshTokenException("사용 불가능한 토큰입니다.");
+        }
+
+        if(LocalDateTime.now().isAfter(originRefreshToken.getExpiredAt())){
+            refreshTokenMapper.unUseRefreshToken(originRefreshToken.getTokenSeq());
+            throw new RefreshTokenExpiredException("토큰이 만료되었습니다.");
+        }
+
+        Long userSeq = originRefreshToken.getUserSeq();
+        User user = userMapper.getUserDetail(userSeq);
+
+        if(user == null){
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        String accessToken = accessTokenProvider.createToken(userDetails);
+        RefreshToken refreshToken = refreshTokenProvider.createRefreshToken(userDetails);
+
+        int deleteResult = refreshTokenMapper.unUseRefreshToken(originRefreshToken.getTokenSeq());
+
+        if(deleteResult != 1){
+            throw new RefreshTokenUpdateFailException("토큰 업데이트에 문제가 발생했습니다.");
+        }
+
+        int insertResult = refreshTokenMapper.insertRefreshToken(refreshToken);
+
+        if(insertResult != 1){
             throw new RefreshTokenInsertFailException("토큰 생성에 문제가 발생했습니다.");
         }
 

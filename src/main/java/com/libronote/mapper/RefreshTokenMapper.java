@@ -45,4 +45,20 @@ public interface RefreshTokenMapper {
      * @return int
      */
     int deleteRefreshToken(String tokenValue);
+
+    /**
+     * 해당 사용자 기본키로 발급된 사용 가능한 RefreshToken 존재 확인 메서드
+     *
+     * @param userSeq 사용자 기본 키
+     * @return boolean
+     */
+    boolean existsRefreshToken(Long userSeq);
+
+    /**
+     * RefreshToken 제거 메서드
+     *
+     * @param userSeq 사용자 기본키
+     * @return int
+     */
+    int deleteRefreshTokenByUserSeq(Long userSeq);
 }

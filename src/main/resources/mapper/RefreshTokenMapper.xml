@@ -26,6 +26,7 @@
             r.issued_at
         FROM REFRESH_TOKEN_INFO r
         WHERE r.user_seq = #{userSeq}
+        AND r.use_yn = 'Y'
     </select>
 
     <insert id="insertRefreshToken" parameterType="RefreshToken" useGeneratedKeys="true" keyProperty="tokenSeq">
@@ -40,7 +41,18 @@
     </update>
 
     <delete id="deleteRefreshToken" parameterType="string">
-        DELETE FROM REFRESH_TOKKEN_INFO r
+        DELETE FROM REFRESH_TOKEN_INFO r
         WHERE r.token_value = #{tokenValue}
     </delete>
+
+    <delete id="deleteRefreshTokenByUserSeq" parameterType="Long">
+        DELETE FROM REFRESH_TOKEN_INFO r
+        WHERE r.user_seq = #{userSeq}
+    </delete>
+
+    <select id="existsRefreshToken" parameterType="Long" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM REFRESH_TOKEN_INFO r WHERE r.user_seq = #{userSeq}
+        )
+    </select>
 </mapper>

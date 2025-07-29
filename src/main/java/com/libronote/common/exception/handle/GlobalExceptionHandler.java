@@ -1,9 +1,6 @@
 package com.libronote.common.exception.handle;
 
-import com.libronote.common.exception.AlreadyRegistrationException;
-import com.libronote.common.exception.PasswordNotMatchesException;
-import com.libronote.common.exception.RefreshTokenInsertFailException;
-import com.libronote.common.exception.RegistrationException;
+import com.libronote.common.exception.*;
 import com.libronote.common.exception.handle.response.ExceptionResponse;
 import com.libronote.common.wrapper.ResponseWrapper;
 import com.libronote.common.wrapper.ResponseWrapperUtils;
@@ -42,6 +39,28 @@ public class GlobalExceptionHandler {
         return ResponseWrapperUtils.fail(HttpStatus.BAD_REQUEST, response);
     }
 
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<ResponseWrapper> handleInvalidRefreshToken(InvalidRefreshTokenException e) {
+        log.error("InvalidRefreshTokenException 발생 : {}", e.getMessage());
+
+        ExceptionResponse response = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .build();
+
+        return ResponseWrapperUtils.fail(HttpStatus.BAD_REQUEST, response);
+    }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<ResponseWrapper> handleRefreshTokenExpiredException(RefreshTokenExpiredException e) {
+        log.error("RefreshTokenExpiredException 발생 : {}", e.getMessage());
+
+        ExceptionResponse response = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .build();
+
+        return ResponseWrapperUtils.fail(HttpStatus.BAD_REQUEST, response);
+    }
+
     // 404
 
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -55,11 +74,33 @@ public class GlobalExceptionHandler {
         return ResponseWrapperUtils.fail(HttpStatus.NOT_FOUND, response);
     }
 
+    @ExceptionHandler(RefreshTokenNotFoundException.class)
+    public ResponseEntity<ResponseWrapper> handleRefreshTokenNotFoundException(RefreshTokenNotFoundException e) {
+        log.error("RefreshTokenNotFoundException 발생 : {}", e.getMessage());
+
+        ExceptionResponse response = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .build();
+
+        return ResponseWrapperUtils.fail(HttpStatus.NOT_FOUND, response);
+    }
+
     // 500
 
     @ExceptionHandler(RefreshTokenInsertFailException.class)
     public ResponseEntity<ResponseWrapper> handleRefreshFailedException(RefreshTokenInsertFailException e) {
         log.error("RefreshTokenInsertFailException 발생 : {}", e.getMessage());
+
+        ExceptionResponse response = ExceptionResponse.builder()
+                .message(e.getMessage())
+                .build();
+
+        return ResponseWrapperUtils.fail(HttpStatus.INTERNAL_SERVER_ERROR, response);
+    }
+
+    @ExceptionHandler(RefreshTokenUpdateFailException.class)
+    public ResponseEntity<ResponseWrapper> handleRefreshFailedException(RefreshTokenUpdateFailException e) {
+        log.error("RefreshTokenUpdateFailException 발생 : {}", e.getMessage());
 
         ExceptionResponse response = ExceptionResponse.builder()
                 .message(e.getMessage())

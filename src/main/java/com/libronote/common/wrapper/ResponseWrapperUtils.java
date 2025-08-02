@@ -26,23 +26,14 @@ public class ResponseWrapperUtils {
         return success(message, null);
     }
 
-    public static ResponseEntity<ResponseWrapper> fail(HttpStatus status, List<Object> errorMessages){
+    public static ResponseEntity<ResponseWrapper> fail(String message, HttpStatus status){
         ResponseWrapper responseWrapper = ResponseWrapper.builder()
                 .success(false)
                 .status(status.value())
-                .errorMessage(errorMessages)
-                .message("fail")
+                .message(message)
                 .timestamp(LocalDateTime.now())
                 .build();
 
         return new ResponseEntity<>(responseWrapper, status);
-    }
-
-    public static ResponseEntity<ResponseWrapper> fail(HttpStatus status, Object exceptionResponse){
-
-        List<Object> errorMessage = new ArrayList<>();
-        errorMessage.add(exceptionResponse);
-
-        return fail(status, errorMessage);
     }
 }

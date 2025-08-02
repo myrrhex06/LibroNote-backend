@@ -23,9 +23,6 @@ public class ResponseWrapper {
     @Schema(description = "응답 메시지")
     private String message;
 
-    @Schema(description = "오류 메시지")
-    private List<Object> errorMessage;
-
     @Schema(description = "응답 결과")
     private Object result;
 

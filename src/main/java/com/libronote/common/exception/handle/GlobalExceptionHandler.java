@@ -21,44 +21,28 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseWrapper> handlePasswordNotMatchesException(PasswordNotMatchesException e) {
         log.error("PasswordNotMatchesException 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.BAD_REQUEST, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AlreadyRegistrationException.class)
     public ResponseEntity<ResponseWrapper> handleAlreadyRegistrationException(AlreadyRegistrationException e) {
         log.error("AlreadyRegistrationException 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.BAD_REQUEST, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidRefreshTokenException.class)
     public ResponseEntity<ResponseWrapper> handleInvalidRefreshToken(InvalidRefreshTokenException e) {
         log.error("InvalidRefreshTokenException 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.BAD_REQUEST, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RefreshTokenExpiredException.class)
     public ResponseEntity<ResponseWrapper> handleRefreshTokenExpiredException(RefreshTokenExpiredException e) {
         log.error("RefreshTokenExpiredException 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.BAD_REQUEST, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     // 404
@@ -67,22 +51,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseWrapper> handleUsernameNotFoundException(UsernameNotFoundException e) {
         log.error("UsernameNotFoundException 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.NOT_FOUND, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(RefreshTokenNotFoundException.class)
     public ResponseEntity<ResponseWrapper> handleRefreshTokenNotFoundException(RefreshTokenNotFoundException e) {
         log.error("RefreshTokenNotFoundException 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.NOT_FOUND, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     // 500
@@ -91,43 +67,27 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseWrapper> handleRefreshFailedException(RefreshTokenInsertFailException e) {
         log.error("RefreshTokenInsertFailException 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.INTERNAL_SERVER_ERROR, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(RefreshTokenUpdateFailException.class)
     public ResponseEntity<ResponseWrapper> handleRefreshFailedException(RefreshTokenUpdateFailException e) {
         log.error("RefreshTokenUpdateFailException 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.INTERNAL_SERVER_ERROR, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<ResponseWrapper> handleRegistrationException(RegistrationException e) {
         log.error("RegistrationException 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.INTERNAL_SERVER_ERROR, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseWrapper> handleException(Exception e){
         log.error("알 수 없는 에러 발생 : {}", e.getMessage());
 
-        ExceptionResponse response = ExceptionResponse.builder()
-                .message(e.getMessage())
-                .build();
-
-        return ResponseWrapperUtils.fail(HttpStatus.INTERNAL_SERVER_ERROR, response);
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

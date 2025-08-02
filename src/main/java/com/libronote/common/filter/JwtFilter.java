@@ -1,9 +1,9 @@
 package com.libronote.common.filter;
 
 import com.libronote.common.custom.CustomUserDetails;
-import com.libronote.common.jwt.AccessTokenProvider;
 import com.libronote.domain.User;
 import com.libronote.mapper.UserMapper;
+import com.libronote.service.AccessTokenService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,15 +18,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final AccessTokenProvider accessTokenProvider;
+    private final AccessTokenService accessTokenService;
     private final UserMapper userMapper;;
 
     @Override
@@ -38,14 +36,11 @@ public class JwtFilter extends OncePerRequestFilter {
             token = authorization.substring(7);
         }
 
-        if(token != null && accessTokenProvider.validateToken(token)){
-            Claims claims = accessTokenProvider.parseToken(token);
+        if(token != null && accessTokenService.validateAccessToken(token)){
 
-            String authorities = claims.get("authorities", String.class);
+            Claims claims = accessTokenService.parseAccessToken(token);
 
-            List<SimpleGrantedAuthority> auth = Arrays.stream(authorities.split(","))
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
+            List<SimpleGrantedAuthority> auth = accessTokenService.getAuthorities(claims);
 
             User user = userMapper.findByEmail(claims.getSubject());
 

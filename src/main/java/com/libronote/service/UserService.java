@@ -1,10 +1,14 @@
 package com.libronote.service;
 
+import com.libronote.controller.request.UserUpdateRequest;
+import com.libronote.controller.response.UserResponse;
 import com.libronote.domain.User;
 import com.libronote.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -60,5 +64,71 @@ public class UserService {
      */
     public Optional<User> findUserByUserSeq(Long userSeq){
         return Optional.ofNullable(userMapper.getUserDetail(userSeq));
+    }
+
+    public List<UserResponse> list(Long page, Long size, String nickname){
+        List<User> list = userMapper.getUserList(page, size, nickname);
+
+        return list.stream().map(user -> {
+            return UserResponse.builder()
+                    .userSeq(user.getUserSeq())
+                    .email(user.getEmail())
+                    .nickname(user.getNickname())
+                    .role(user.getRole())
+                    .provider(user.getProvider())
+                    .createdAt(user.getCreatedAt())
+                    .modifiedAt(user.getModifiedAt())
+                    .build();
+        }).toList();
+    }
+
+    /**
+     * 사용자 정보 수정 처리 메서드
+     *
+     * @param request 사용자 정보 수정 요청 객체
+     */
+    public void update(UserUpdateRequest request){
+
+        User user = findUserByUserSeq(request.getUserSeq())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        user.setEmail(request.getEmail());
+        user.setNickname(request.getNickname());
+
+        try{
+            userMapper.updateUser(user);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 사용자 정보 삭제 처리 메서드
+     *
+     * @param userSeq 사용자 기본키
+     */
+    public void delete(Long userSeq) {
+        userMapper.deleteUser(userSeq);
+    }
+
+    /**
+     * 사용자 상세 정보 조회 처리 메서드
+     *
+     * @param userSeq 사용자 기본키
+     * @return UserResponse
+     */
+    public UserResponse detail(Long userSeq) {
+        User user = findUserByUserSeq(userSeq)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        return UserResponse.builder()
+                .userSeq(user.getUserSeq())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .role(user.getRole())
+                .provider(user.getProvider())
+                .createdAt(user.getCreatedAt())
+                .modifiedAt(user.getModifiedAt())
+                .build();
     }
 }

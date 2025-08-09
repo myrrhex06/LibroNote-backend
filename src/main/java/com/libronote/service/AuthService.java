@@ -59,12 +59,17 @@ public class AuthService {
 
         userService.saveUser(user);
 
+        User result = userService.findUserByUserSeq(user.getUserSeq())
+                .orElseThrow(() -> new RegistrationException("회원가입에 실패하였습니다."));
+
         return UserResponse.builder()
-                .userSeq(user.getUserSeq())
-                .nickname(user.getNickname())
-                .email(user.getEmail())
-                .provider(user.getProvider())
-                .role(user.getRole())
+                .userSeq(result.getUserSeq())
+                .nickname(result.getNickname())
+                .email(result.getEmail())
+                .provider(result.getProvider())
+                .role(result.getRole())
+                .createdAt(result.getCreatedAt())
+                .modifiedAt(result.getModifiedAt())
                 .build();
     }
 

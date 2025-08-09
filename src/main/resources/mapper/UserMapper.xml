@@ -28,6 +28,12 @@
             u.created_at,
             u.modified_at
         FROM USER_INFO u
+        <where>
+            <if test="nickname != null and nickname != ''">
+                AND u.nickname LIKE CONCAT('%', #{nickname}, '%')
+            </if>
+        </where>
+        ORDER BY u.created_at DESC
         LIMIT #{page}, #{size}
     </select>
 
@@ -66,4 +72,17 @@
         DELETE FROM USER_INFO u
         WHERE u.user_seq = #{userSeq}
     </delete>
+
+    <update id="updateUser" parameterType="User">
+        UPDATE USER_INFO u
+        <set>
+            <if test="nickname != null and nickname != ''">
+                u.nickname = #{nickname},
+            </if>
+            <if test="email != null and email != ''">
+                u.email = #{email},
+            </if>
+        </set>
+        WHERE u.user_seq = #{userSeq}
+    </update>
 </mapper>

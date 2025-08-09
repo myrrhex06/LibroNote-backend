@@ -5,6 +5,8 @@ import com.libronote.common.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,4 +28,10 @@ public class UserResponse {
 
     @Schema(description = "인증 제공자")
     private Provider provider;
+
+    @Schema(description = "생성일시")
+    private LocalDateTime createdAt;
+
+    @Schema(description = "수정일시")
+    private LocalDateTime modifiedAt;
 }

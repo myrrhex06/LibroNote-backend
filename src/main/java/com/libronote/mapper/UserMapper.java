@@ -24,7 +24,7 @@ public interface UserMapper {
      * @param size 데이터 개수
      * @return List
      */
-    List<User> getUserList(@Param("page") int page, @Param("size") int size);
+    List<User> getUserList(@Param("page") Long page, @Param("size") Long size, @Param("nickname") String nickname);
 
     /**
      * 사용자 정보 조회 메서드
@@ -65,4 +65,12 @@ public interface UserMapper {
      * @return boolean
      */
     boolean existsNickname(String nickname);
+
+    /**
+     * 사용자 정보 수정 메서드
+     *
+     * @param user 사용자 정보 객체
+     * @return int
+     */
+    int updateUser(User user);
 }

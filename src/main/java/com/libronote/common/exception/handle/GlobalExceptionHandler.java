@@ -24,6 +24,20 @@ public class GlobalExceptionHandler {
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidFileNameException.class)
+    public ResponseEntity<ResponseWrapper> handleInvalidFileNameException(InvalidFileNameException e) {
+        log.error("InvalidFileNameException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidExtensionException.class)
+    public ResponseEntity<ResponseWrapper> handleInvalidExtensionException(InvalidExtensionException e) {
+        log.error("InvalidExtensionException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(AlreadyRegistrationException.class)
     public ResponseEntity<ResponseWrapper> handleAlreadyRegistrationException(AlreadyRegistrationException e) {
         log.error("AlreadyRegistrationException 발생 : {}", e.getMessage());
@@ -80,6 +94,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<ResponseWrapper> handleRegistrationException(RegistrationException e) {
         log.error("RegistrationException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(FileUploadFailException.class)
+    public ResponseEntity<ResponseWrapper> handleFileUploadFailException(FileUploadFailException e) {
+        log.error("FileUploadFailException 발생 : {}", e.getMessage());
 
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

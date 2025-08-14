@@ -23,6 +23,13 @@ public class GlobalExceptionHandler {
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidDirectoryPathException.class)
+    public ResponseEntity<ResponseWrapper> handlePasswordNotMatchesException(InvalidDirectoryPathException e) {
+        log.error("InvalidDirectoryPathException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidFileNameException.class)
     public ResponseEntity<ResponseWrapper> handleInvalidFileNameException(InvalidFileNameException e) {
         log.error("InvalidFileNameException 발생 : {}", e.getMessage());

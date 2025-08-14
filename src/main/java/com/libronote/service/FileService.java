@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,35 +34,41 @@ public class FileService {
     @Value("${file.directory}")
     private String saveDirectory;
 
+    /**
+     * 파일 기본키를 기준으로 파일 정보 조회 처리 메서드
+     *
+     * @param fileSeq 파일 기본키
+     * @return Optional<File>
+     */
+    public Optional<File> findByFileSeq(Long fileSeq){
+        return Optional.ofNullable(fileMapper.findByFileSeq(fileSeq));
+    }
+
+    /**
+     * 파일 저장 처리 메서드
+     *
+     * @param file 파일 정보
+     */
+    public void saveFile(File file){
+        fileMapper.save(file);
+    }
+
+    /**
+     * 파일 업로드 처리 메서드
+     *
+     * @param file 업로드 파일
+     * @param customUserDetails 인증된 사용자 객체
+     * @return FileResponse
+     */
     public FileResponse upload(MultipartFile file, CustomUserDetails customUserDetails) {
         try{
             User user = userService.findUserByEmail(customUserDetails.getUsername())
                     .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-            String uuid = UUID.randomUUID().toString();
-            String originalFilename = file.getOriginalFilename();
+            String saveFileName = createSaveFileName(file);
 
-            int lastDotIndex = originalFilename.lastIndexOf(".");
-            if(lastDotIndex == -1){
-                throw new InvalidFileNameException("확장자를 확인해주세요.");
-            }
+            Path saveFilePath = getSaveFilePath(saveFileName);
 
-            String extension = originalFilename.substring(lastDotIndex + 1);
-
-            if(!extension.equals("jpg") && !extension.equals("png") && !extension.equals("jpeg") && !extension.equals("gif")){
-                throw new InvalidExtensionException("이미지 파일만 업로드 가능합니다.");
-            }
-
-            String fileName = originalFilename.substring(0, lastDotIndex);
-
-            String saveFileName = fileName + "_" + uuid + "." + extension;
-
-            Path directoryPath = Paths.get(saveDirectory);
-            if(!Files.exists(directoryPath)) {
-                Files.createDirectories(directoryPath);
-            }
-
-            Path saveFilePath = directoryPath.resolve(saveFileName);
             Files.copy(file.getInputStream(), saveFilePath);
 
             File fileEntity = File.builder()
@@ -70,9 +77,10 @@ public class FileService {
                     .imageUrl(saveFilePath.toString())
                     .build();
 
-            fileMapper.save(fileEntity);
+            saveFile(fileEntity);
 
-            File result = fileMapper.findByFileSeq(fileEntity.getFileSeq());
+            File result = findByFileSeq(fileEntity.getFileSeq())
+                    .orElseThrow(() -> new FileUploadFailException("파일 업로드 중 오류가 발생하였습니다."));
 
             return FileResponse.builder()
                     .fileSeq(result.getFileSeq())
@@ -88,12 +96,88 @@ public class FileService {
         }
     }
 
+    /**
+     * 업로드할 파일의 파일명에서 확장자 추출을 위한 . 인덱스 번호 조회 처리 메서드
+     *
+     * @param originalFilename 업로드할 파일의 파일명
+     * @return int
+     */
+    public int getLastDotIndex(String originalFilename){
+
+        int lastDotIndex = originalFilename.lastIndexOf(".");
+        if(lastDotIndex == -1){
+            throw new InvalidFileNameException("확장자를 확인해주세요.");
+        }
+
+        return lastDotIndex;
+    }
+
+    /**
+     * 업로드 파일 검증 처리 메서드
+     *
+     * @param extension 확장자명
+     */
+    public void validateImageExtension(String extension) {
+        String lowerCase = extension.toLowerCase();
+
+        if(!lowerCase.equals("jpg") && !lowerCase.equals("png") && !lowerCase.equals("jpeg") && !lowerCase.equals("gif")){
+            throw new InvalidExtensionException("이미지 파일만 업로드 가능합니다.");
+        }
+    }
+
+    /**
+     * 저장될 파일의 파일명 처리 생성
+     *
+     * @param file 업로드 파일
+     * @return String
+     */
+    public String createSaveFileName(MultipartFile file){
+        String uuid = UUID.randomUUID().toString();
+        String originalFilename = file.getOriginalFilename();
+
+        int lastDotIndex = getLastDotIndex(originalFilename);
+
+        String extension = originalFilename.substring(lastDotIndex + 1);
+
+        validateImageExtension(extension);
+
+        String fileName = originalFilename.substring(0, lastDotIndex);
+        return fileName + "_" + uuid + "." + extension;
+    }
+
+    /**
+     * 업로드 파일 저장 경로 생성 처리 메서드
+     *
+     * @param saveFileName 저장될 파일명
+     * @return Path
+     * @throws IOException IOException
+     */
+    public Path getSaveFilePath(String saveFileName) throws IOException {
+
+        Path directoryPath = Paths.get(saveDirectory);
+        if(!Files.exists(directoryPath)) {
+            Files.createDirectories(directoryPath);
+        }
+
+        Path saveFilePath = directoryPath.resolve(saveFileName).normalize();
+
+        if(!saveFilePath.startsWith(directoryPath)) {
+            throw new InvalidDirectoryPathException("저장 경로가 올바르지 않습니다.");
+        }
+
+        return saveFilePath;
+    }
+
+    /**
+     * 파일 다운로드 처리 메서드
+     *
+     * @param fileSeq 파일 기본키
+     * @return Resource
+     */
     public Resource download(Long fileSeq) {
 
-        File file = fileMapper.findByFileSeq(fileSeq);
-        if(file == null) {
-            throw new FileNotFoundException("이미지를 찾을 수 없습니다.");
-        }
+        File file = findByFileSeq(fileSeq)
+                .orElseThrow(() -> new FileNotFoundException("이미지를 찾을 수 없습니다."));
 
         try{
             String imageUrl = file.getImageUrl();
@@ -101,13 +185,23 @@ public class FileService {
 
             Resource resource = new UrlResource(path.toUri());
 
-            if(!resource.exists() || !resource.isReadable() || !resource.isFile()) {
-                throw new FileDownloadFailException("파일 다운로드 예외 발생");
-            }
+            validateResource(resource);
 
             return resource;
+
         } catch (MalformedURLException e) {
             throw new FileDownloadFailException(e.getMessage());
+        }
+    }
+
+    /**
+     * Resource 검증 처리 메서드
+     *
+     * @param resource Resource
+     */
+    public void validateResource(Resource resource) {
+        if(!resource.exists() || !resource.isReadable() || !resource.isFile()) {
+            throw new FileDownloadFailException("파일 다운로드 예외 발생");
         }
     }
 }

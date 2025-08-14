@@ -21,4 +21,12 @@ public interface FileMapper {
      * @return File
      */
     File findByFileSeq(Long fileSeq);
+
+    /**
+     * 파일 정보 삭제 메서드
+     *
+     * @param fileSeq 파일 기본키
+     * @return int
+     */
+    int deleteByFileSeq(Long fileSeq);
 }

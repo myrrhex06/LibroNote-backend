@@ -20,4 +20,9 @@
         FROM FILE_INFO f
         WHERE f.file_seq = #{fileSeq}
     </select>
+
+    <delete id="deleteByFileSeq" parameterType="Long">
+        DELETE FROM FILE_INFO f
+        WHERE f.file_seq = #{fileSeq}
+    </delete>
 </mapper>

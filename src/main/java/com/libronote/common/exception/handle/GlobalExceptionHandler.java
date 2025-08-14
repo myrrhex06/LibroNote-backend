@@ -65,6 +65,15 @@ public class GlobalExceptionHandler {
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    // 403
+
+    @ExceptionHandler(OtherUserUploadFileException.class)
+    public ResponseEntity<ResponseWrapper> handleOtherUserUploadFileException(OtherUserUploadFileException e) {
+        log.error("OtherUserUploadFileException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
     // 404
 
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -121,6 +130,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FileUploadFailException.class)
     public ResponseEntity<ResponseWrapper> handleFileUploadFailException(FileUploadFailException e) {
         log.error("FileUploadFailException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(FileDeleteFailException.class)
+    public ResponseEntity<ResponseWrapper> handleFileDeleteFailException(FileDeleteFailException e) {
+        log.error("FileDeleteFailException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(FileUpdateFailException.class)
+    public ResponseEntity<ResponseWrapper> handleFileUpdateFailException(FileUpdateFailException e) {
+        log.error("FileUpdateFailException 발생 : {}", e.getMessage());
 
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

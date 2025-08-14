@@ -35,6 +35,9 @@ public class FileController {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "성공 시 반환"),
+            @ApiResponse(responseCode = "400", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "잘못된 경로 또는 확장자일 경우 반환"),
             @ApiResponse(responseCode = "500", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "파일 업로드 실패 시 발생")
@@ -73,5 +76,63 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + download.getFilename() + "\"")
                 .body(download);
+    }
+
+    @Operation(summary = "책 표지 이미지 삭제 API", description = "업로드된 책 표지 이미지 삭제 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "성공 시 반환"),
+            @ApiResponse(responseCode = "403", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "이미지 소유자가 아닐 경우 반환"),
+            @ApiResponse(responseCode = "404", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "파일 또는 사용자를 찾을 수 없을 시 발생"),
+            @ApiResponse(responseCode = "500", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "파일 제거 실패 시 발생")
+    })
+    @DeleteMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @SecurityRequirement(name = "Jwt Auth")
+    public ResponseEntity<ResponseWrapper> delete(
+            @Parameter(description = "파일 기본키", required = true)
+            @RequestParam(name = "fileSeq", required = true) Long fileSeq,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        fileService.delete(fileSeq, customUserDetails);
+        return ResponseWrapperUtils.success("success");
+    }
+
+    @Operation(summary = "책 표지 이미지 수정 API", description = "업로드된 책 표지 이미지 수정 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "성공 시 반환"),
+            @ApiResponse(responseCode = "400", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "잘못된 경로 또는 확장자일 경우 반환"),
+            @ApiResponse(responseCode = "403", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "이미지 소유자가 아닐 경우 반환"),
+            @ApiResponse(responseCode = "404", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "파일 또는 사용자를 찾을 수 없을 시 발생"),
+            @ApiResponse(responseCode = "500", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "파일 제거 또는 저장 실패 시 발생")
+    })
+    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @SecurityRequirement(name = "Jwt Auth")
+    public ResponseEntity<ResponseWrapper> update(
+            @Parameter(description = "업로드 파일", required = true)
+            @RequestParam(name = "file", required = true) MultipartFile file,
+            @Parameter(description = "파일 기본키", required = true)
+            @RequestParam(name = "fileSeq", required = true) Long fileSeq,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        return ResponseWrapperUtils.success("success", fileService.update(file, fileSeq, customUserDetails));
     }
 }

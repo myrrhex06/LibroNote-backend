@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -53,6 +54,10 @@ public class FileService {
         fileMapper.save(file);
     }
 
+    public void deleteFileByFileSeq(Long fileSeq){
+        fileMapper.deleteByFileSeq(fileSeq);
+    }
+
     /**
      * 파일 업로드 처리 메서드
      *
@@ -61,7 +66,6 @@ public class FileService {
      * @return FileResponse
      */
     public FileResponse upload(MultipartFile file, CustomUserDetails customUserDetails) {
-        try{
             User user = userService.findUserByEmail(customUserDetails.getUsername())
                     .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -69,7 +73,7 @@ public class FileService {
 
             Path saveFilePath = getSaveFilePath(saveFileName);
 
-            Files.copy(file.getInputStream(), saveFilePath);
+            fileSave(file, saveFilePath);
 
             File fileEntity = File.builder()
                     .userSeq(user.getUserSeq())
@@ -90,10 +94,6 @@ public class FileService {
                     .createdAt(result.getCreatedAt())
                     .modifiedAt(result.getModifiedAt())
                     .build();
-
-        } catch (IOException e) {
-            throw new FileUploadFailException(e.getMessage());
-        }
     }
 
     /**
@@ -152,20 +152,23 @@ public class FileService {
      * @return Path
      * @throws IOException IOException
      */
-    public Path getSaveFilePath(String saveFileName) throws IOException {
+    public Path getSaveFilePath(String saveFileName) {
+        try{
+            Path directoryPath = Paths.get(saveDirectory);
+            if(!Files.exists(directoryPath)) {
+                Files.createDirectories(directoryPath);
+            }
 
-        Path directoryPath = Paths.get(saveDirectory);
-        if(!Files.exists(directoryPath)) {
-            Files.createDirectories(directoryPath);
+            Path saveFilePath = directoryPath.resolve(saveFileName).normalize();
+
+            if(!saveFilePath.startsWith(directoryPath)) {
+                throw new InvalidDirectoryPathException("저장 경로가 올바르지 않습니다.");
+            }
+
+            return saveFilePath;
+        } catch (IOException e) {
+            throw new FileUploadFailException("디렉토리 생성 중 문제가 발생했습니다.");
         }
-
-        Path saveFilePath = directoryPath.resolve(saveFileName).normalize();
-
-        if(!saveFilePath.startsWith(directoryPath)) {
-            throw new InvalidDirectoryPathException("저장 경로가 올바르지 않습니다.");
-        }
-
-        return saveFilePath;
     }
 
     /**
@@ -202,6 +205,114 @@ public class FileService {
     public void validateResource(Resource resource) {
         if(!resource.exists() || !resource.isReadable() || !resource.isFile()) {
             throw new FileDownloadFailException("파일 다운로드 예외 발생");
+        }
+    }
+
+    /**
+     * 업로드된 파일 삭제 처리 메서드
+     *
+     * @param fileSeq 파일 기본키
+     * @param customUserDetails 인증된 사용자 객체
+     */
+    public void delete(Long fileSeq, CustomUserDetails customUserDetails) {
+        User user = userService.findUserByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        File file = findByFileSeq(fileSeq)
+                .orElseThrow(() -> new FileNotFoundException("이미지를 찾을 수 없습니다."));
+
+        validateOwner(file, user);
+
+        String imageUrl = file.getImageUrl();
+        Path path = Paths.get(imageUrl);
+
+        fileDelete(path);
+
+        deleteFileByFileSeq(file.getFileSeq());
+
+    }
+
+    /**
+     * 파일 소유자 검증 처리 메서드
+     *
+     * @param file 파일 정보
+     * @param user 사용자 정보
+     */
+    public void validateOwner(File file, User user) {
+        if(!file.getUserSeq().equals(user.getUserSeq())){
+            throw new OtherUserUploadFileException("다른 사용자가 업로드한 파일은 제거할 수 없습니다.");
+        }
+    }
+
+    @Transactional
+    public FileResponse update(MultipartFile file, Long fileSeq, CustomUserDetails customUserDetails) {
+        User user = userService.findUserByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        File oldFile = findByFileSeq(fileSeq)
+                .orElseThrow(() -> new FileNotFoundException("이미지를 찾을 수 없습니다."));
+
+        validateOwner(oldFile, user);
+
+        String imageUrl = oldFile.getImageUrl();
+        Path path = Paths.get(imageUrl);
+
+        deleteFileByFileSeq(oldFile.getFileSeq());
+
+        fileDelete(path);
+
+        String saveFileName = createSaveFileName(file);
+
+        Path saveFilePath = getSaveFilePath(saveFileName);
+
+        File fileEntity = File.builder()
+                .userSeq(user.getUserSeq())
+                .fileName(saveFileName)
+                .imageUrl(saveFilePath.toString())
+                .build();
+
+        saveFile(fileEntity);
+
+        fileSave(file, saveFilePath);
+
+        File result = findByFileSeq(fileEntity.getFileSeq())
+                .orElseThrow(() -> new FileUploadFailException("파일 업로드 중 오류가 발생하였습니다."));
+
+        return FileResponse.builder()
+                .fileSeq(result.getFileSeq())
+                .userSeq(result.getUserSeq())
+                .imageUrl(result.getImageUrl())
+                .fileName(result.getFileName())
+                .createdAt(result.getCreatedAt())
+                .modifiedAt(result.getModifiedAt())
+                .build();
+    }
+
+    /**
+     * 파일 저장 처리 메서드
+     *
+     * @param file 업로드 파일
+     * @param saveFilePath 파일 저장 경로
+     */
+    public void fileSave(MultipartFile file, Path saveFilePath) {
+        try{
+            Files.copy(file.getInputStream(), saveFilePath);
+        } catch (IOException e) {
+            throw new FileUploadFailException("파일 업로드에 실패하였습니다.");
+        }
+
+    }
+
+    /**
+     * 파일 삭제 처리 메서드
+     *
+     * @param path 삭제할 파일 경로
+     */
+    public void fileDelete(Path path) {
+        try{
+            Files.delete(path);
+        } catch (IOException e) {
+            throw new FileDeleteFailException("파일 제거에 실패하였습니다.");
         }
     }
 }

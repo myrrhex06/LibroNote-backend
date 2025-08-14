@@ -54,6 +54,11 @@ public class FileService {
         fileMapper.save(file);
     }
 
+    /**
+     * 파일 삭제 처리 메서드
+     *
+     * @param fileSeq 파일 기본키
+     */
     public void deleteFileByFileSeq(Long fileSeq){
         fileMapper.deleteByFileSeq(fileSeq);
     }

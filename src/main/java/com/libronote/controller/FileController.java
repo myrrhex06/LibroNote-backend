@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,5 +48,30 @@ public class FileController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
         return ResponseWrapperUtils.success("success",  fileService.upload(file, customUserDetails));
+    }
+
+    @Operation(summary = "책 표지 이미지 다운로드 API", description = "책 표지 이미지 다운로드 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "성공 시 반환"),
+            @ApiResponse(responseCode = "404", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "파일을 찾을 수 없을 시 발생"),
+            @ApiResponse(responseCode = "500", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "파일 다운로드 실패 시 발생")
+    })
+    @GetMapping
+    public ResponseEntity<Resource> download(
+            @Parameter(description = "파일 기본키", required = true)
+            @RequestParam(name = "fileSeq", required = true) Long fileSeq
+    ){
+        Resource download = fileService.download(fileSeq);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + download.getFilename() + "\"")
+                .body(download);
     }
 }

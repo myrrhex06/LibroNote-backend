@@ -1,7 +1,6 @@
 package com.libronote.common.exception.handle;
 
 import com.libronote.common.exception.*;
-import com.libronote.common.exception.handle.response.ExceptionResponse;
 import com.libronote.common.wrapper.ResponseWrapper;
 import com.libronote.common.wrapper.ResponseWrapperUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -75,11 +74,25 @@ public class GlobalExceptionHandler {
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<ResponseWrapper> handleFileNotFoundException(FileNotFoundException e) {
+        log.error("FileNotFoundException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     // 500
 
     @ExceptionHandler(RefreshTokenInsertFailException.class)
     public ResponseEntity<ResponseWrapper> handleRefreshFailedException(RefreshTokenInsertFailException e) {
         log.error("RefreshTokenInsertFailException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(FileDownloadFailException.class)
+    public ResponseEntity<ResponseWrapper> handleInvalidFileException(FileDownloadFailException e) {
+        log.error("InvalidFileException 발생 : {}", e.getMessage());
 
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

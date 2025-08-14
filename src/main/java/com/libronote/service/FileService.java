@@ -1,9 +1,7 @@
 package com.libronote.service;
 
 import com.libronote.common.custom.CustomUserDetails;
-import com.libronote.common.exception.FileUploadFailException;
-import com.libronote.common.exception.InvalidExtensionException;
-import com.libronote.common.exception.InvalidFileNameException;
+import com.libronote.common.exception.*;
 import com.libronote.controller.response.FileResponse;
 import com.libronote.domain.File;
 import com.libronote.domain.User;
@@ -11,11 +9,14 @@ import com.libronote.mapper.FileMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -84,6 +85,29 @@ public class FileService {
 
         } catch (IOException e) {
             throw new FileUploadFailException(e.getMessage());
+        }
+    }
+
+    public Resource download(Long fileSeq) {
+
+        File file = fileMapper.findByFileSeq(fileSeq);
+        if(file == null) {
+            throw new FileNotFoundException("이미지를 찾을 수 없습니다.");
+        }
+
+        try{
+            String imageUrl = file.getImageUrl();
+            Path path = Paths.get(imageUrl);
+
+            Resource resource = new UrlResource(path.toUri());
+
+            if(!resource.exists() || !resource.isReadable() || !resource.isFile()) {
+                throw new FileDownloadFailException("파일 다운로드 예외 발생");
+            }
+
+            return resource;
+        } catch (MalformedURLException e) {
+            throw new FileDownloadFailException(e.getMessage());
         }
     }
 }

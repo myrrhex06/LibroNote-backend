@@ -244,6 +244,14 @@ public class FileService {
         }
     }
 
+    /**
+     * 업로드된 이미지 파일 수정 처리 메서드
+     *
+     * @param file 새로 업로드할 파일
+     * @param fileSeq 기존 파일 기본키
+     * @param customUserDetails 인증된 사용자 객체
+     * @return FileResponse
+     */
     @Transactional
     public FileResponse update(MultipartFile file, Long fileSeq, CustomUserDetails customUserDetails) {
         User user = userService.findUserByEmail(customUserDetails.getUsername())

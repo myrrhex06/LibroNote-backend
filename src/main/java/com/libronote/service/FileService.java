@@ -64,6 +64,15 @@ public class FileService {
     }
 
     /**
+     * 파일 정보 수정 처리 메서드
+     *
+     * @param file 파일 정보
+     */
+    public void updateFile(File file){
+        fileMapper.update(file);
+    }
+
+    /**
      * 파일 업로드 처리 메서드
      *
      * @param file 업로드 파일
@@ -177,12 +186,12 @@ public class FileService {
     }
 
     /**
-     * 파일 다운로드 처리 메서드
+     * 파일 미리보기 처리 메서드
      *
      * @param fileSeq 파일 기본키
      * @return Resource
      */
-    public Resource download(Long fileSeq) {
+    public Resource show(Long fileSeq) {
 
         File file = findByFileSeq(fileSeq)
                 .orElseThrow(() -> new FileNotFoundException("이미지를 찾을 수 없습니다."));
@@ -198,7 +207,7 @@ public class FileService {
             return resource;
 
         } catch (MalformedURLException e) {
-            throw new FileDownloadFailException(e.getMessage());
+            throw new FileShowException(e.getMessage());
         }
     }
 
@@ -209,7 +218,7 @@ public class FileService {
      */
     public void validateResource(Resource resource) {
         if(!resource.exists() || !resource.isReadable() || !resource.isFile()) {
-            throw new FileDownloadFailException("파일 다운로드 예외 발생");
+            throw new InvalidResourceException("잘못된 리소스입니다.");
         }
     }
 
@@ -270,8 +279,6 @@ public class FileService {
         String imageUrl = oldFile.getImageUrl();
         Path path = Paths.get(imageUrl);
 
-        deleteFileByFileSeq(oldFile.getFileSeq());
-
         fileDelete(path);
 
         String saveFileName = createSaveFileName(file);
@@ -279,14 +286,14 @@ public class FileService {
         Path saveFilePath = getSaveFilePath(saveFileName);
 
         File fileEntity = File.builder()
-                .userSeq(user.getUserSeq())
+                .fileSeq(fileSeq)
                 .fileName(saveFileName)
                 .imageUrl(saveFilePath.toString())
                 .build();
 
-        saveFile(fileEntity);
-
         fileSave(file, saveFilePath);
+
+        updateFile(fileEntity);
 
         File result = findByFileSeq(fileEntity.getFileSeq())
                 .orElseThrow(() -> new FileUploadFailException("파일 업로드 중 오류가 발생하였습니다."));

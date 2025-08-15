@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,7 +39,7 @@ public class FileController {
             }, description = "잘못된 경로 또는 확장자일 경우 반환"),
             @ApiResponse(responseCode = "500", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
-            }, description = "파일 업로드 실패 시 발생")
+            }, description = "파일 업로드 실패 시 반환")
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -53,29 +52,25 @@ public class FileController {
         return ResponseWrapperUtils.success("success",  fileService.upload(file, customUserDetails));
     }
 
-    @Operation(summary = "책 표지 이미지 다운로드 API", description = "책 표지 이미지 다운로드 API")
+    @Operation(summary = "책 표지 이미지 미리보기 API", description = "책 표지 이미지 미리보기 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "성공 시 반환"),
             @ApiResponse(responseCode = "404", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
-            }, description = "파일을 찾을 수 없을 시 발생"),
+            }, description = "파일을 찾을 수 없을 시 반환"),
             @ApiResponse(responseCode = "500", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
-            }, description = "파일 다운로드 실패 시 발생")
+            }, description = "파일 관련 처리 도중 오류 발생 시 반환")
     })
     @GetMapping
-    public ResponseEntity<Resource> download(
+    public ResponseEntity<Resource> show(
             @Parameter(description = "파일 기본키", required = true)
             @RequestParam(name = "fileSeq", required = true) Long fileSeq
     ){
-        Resource download = fileService.download(fileSeq);
-
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + download.getFilename() + "\"")
-                .body(download);
+                .body(fileService.show(fileSeq));
     }
 
     @Operation(summary = "책 표지 이미지 삭제 API", description = "업로드된 책 표지 이미지 삭제 API")
@@ -88,10 +83,10 @@ public class FileController {
             }, description = "이미지 소유자가 아닐 경우 반환"),
             @ApiResponse(responseCode = "404", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
-            }, description = "파일 또는 사용자를 찾을 수 없을 시 발생"),
+            }, description = "파일 또는 사용자를 찾을 수 없을 시 반환"),
             @ApiResponse(responseCode = "500", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
-            }, description = "파일 제거 실패 시 발생")
+            }, description = "파일 제거 실패 시 반환")
     })
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -118,10 +113,10 @@ public class FileController {
             }, description = "이미지 소유자가 아닐 경우 반환"),
             @ApiResponse(responseCode = "404", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
-            }, description = "파일 또는 사용자를 찾을 수 없을 시 발생"),
+            }, description = "파일 또는 사용자를 찾을 수 없을 시 반환"),
             @ApiResponse(responseCode = "500", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
-            }, description = "파일 제거 또는 저장 실패 시 발생")
+            }, description = "파일 관련 처리 도중 오류 발생 시 반환")
     })
     @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_USER')")

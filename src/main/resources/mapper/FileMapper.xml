@@ -25,4 +25,17 @@
         DELETE FROM FILE_INFO f
         WHERE f.file_seq = #{fileSeq}
     </delete>
+
+    <update id="update" parameterType="File">
+        UPDATE FILE_INFO
+        <set>
+            <if test="imageUrl != null and imageUrl != ''">
+                image_url = #{imageUrl},
+            </if>
+            <if test="fileName != null and fileName != ''">
+                file_name = #{fileName}
+            </if>
+        </set>
+        WHERE file_seq = #{fileSeq}
+    </update>
 </mapper>

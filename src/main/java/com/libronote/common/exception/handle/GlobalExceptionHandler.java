@@ -23,6 +23,13 @@ public class GlobalExceptionHandler {
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidResourceException.class)
+    public ResponseEntity<ResponseWrapper> handleInvalidResourceException(InvalidResourceException e) {
+        log.error("InvalidResourceException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidDirectoryPathException.class)
     public ResponseEntity<ResponseWrapper> handlePasswordNotMatchesException(InvalidDirectoryPathException e) {
         log.error("InvalidDirectoryPathException 발생 : {}", e.getMessage());
@@ -106,9 +113,9 @@ public class GlobalExceptionHandler {
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(FileDownloadFailException.class)
-    public ResponseEntity<ResponseWrapper> handleInvalidFileException(FileDownloadFailException e) {
-        log.error("InvalidFileException 발생 : {}", e.getMessage());
+    @ExceptionHandler(FileShowException.class)
+    public ResponseEntity<ResponseWrapper> handleInvalidFileException(FileShowException e) {
+        log.error("FileShowException 발생 : {}", e.getMessage());
 
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -150,6 +157,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseWrapper> handleException(Exception e){
+        e.printStackTrace();
         log.error("알 수 없는 에러 발생 : {}", e.getMessage());
 
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

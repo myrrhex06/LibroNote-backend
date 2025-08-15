@@ -29,4 +29,12 @@ public interface FileMapper {
      * @return int
      */
     int deleteByFileSeq(Long fileSeq);
+
+    /**
+     * 파일 정보 수정 메서드
+     *
+     * @param file 파일 정보
+     * @return int
+     */
+    int update(File file);
 }

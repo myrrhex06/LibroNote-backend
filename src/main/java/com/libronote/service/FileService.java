@@ -50,7 +50,7 @@ public class FileService {
      *
      * @param file 파일 정보
      */
-    public void saveFile(File file){
+    public void insertFileInfo(File file){
         fileMapper.save(file);
     }
 
@@ -95,7 +95,7 @@ public class FileService {
                     .imageUrl(saveFilePath.toString())
                     .build();
 
-            saveFile(fileEntity);
+            insertFileInfo(fileEntity);
 
             File result = findByFileSeq(fileEntity.getFileSeq())
                     .orElseThrow(() -> new FileUploadFailException("파일 업로드 중 오류가 발생하였습니다."));
@@ -140,7 +140,7 @@ public class FileService {
     }
 
     /**
-     * 저장될 파일의 파일명 처리 생성
+     * 저장될 파일의 파일명 생성
      *
      * @param file 업로드 파일
      * @return String
@@ -160,7 +160,7 @@ public class FileService {
     }
 
     /**
-     * 업로드 파일 저장 경로 생성 처리 메서드
+     * 업로드 파일 저장 경로 생성 메서드
      *
      * @param saveFileName 저장될 파일명
      * @return Path

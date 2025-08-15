@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.libronote.mapper.FileMapper">
+    <insert id="save" parameterType="File" useGeneratedKeys="true" keyProperty="fileSeq">
+        INSERT INTO FILE_INFO(image_url, file_name, user_seq)
+        VALUES(#{imageUrl}, #{fileName}, #{userSeq})
+    </insert>
+
+    <select id="findByFileSeq" parameterType="Long" resultType="File">
+        SELECT
+            f.file_seq,
+            f.file_name,
+            f.image_url,
+            f.user_seq,
+            f.created_at,
+            f.modified_at
+        FROM FILE_INFO f
+        WHERE f.file_seq = #{fileSeq}
+    </select>
+
+    <delete id="deleteByFileSeq" parameterType="Long">
+        DELETE FROM FILE_INFO f
+        WHERE f.file_seq = #{fileSeq}
+    </delete>
+
+    <update id="update" parameterType="File">
+        UPDATE FILE_INFO
+        <set>
+            <if test="imageUrl != null and imageUrl != ''">
+                image_url = #{imageUrl},
+            </if>
+            <if test="fileName != null and fileName != ''">
+                file_name = #{fileName}
+            </if>
+        </set>
+        WHERE file_seq = #{fileSeq}
+    </update>
+</mapper>

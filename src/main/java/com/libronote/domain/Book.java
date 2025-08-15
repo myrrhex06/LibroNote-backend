@@ -2,6 +2,8 @@ package com.libronote.domain;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,5 +21,11 @@ public class Book {
 
     private String imgUrl;
 
+    private String feeling;
+
     private Long userSeq;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime modifiedAt;
 }

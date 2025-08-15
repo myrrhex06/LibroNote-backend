@@ -15,7 +15,7 @@ public interface UserMapper {
      * @param userSeq 사용자 기본키
      * @return User
      */
-    User getUserDetail(Long userSeq);
+    User findByUserSeq(Long userSeq);
 
     /**
      * 사용자 정보 목록 조회 메서드
@@ -40,7 +40,7 @@ public interface UserMapper {
      * @param user 사용자 정보 객체
      * @return int
      */
-    int insertUser(User user);
+    int save(User user);
 
     /**
      * 사용자 정보 제거 메서드
@@ -48,7 +48,7 @@ public interface UserMapper {
      * @param userSeq 사용자 기본키
      * @return int
      */
-    int deleteUser(Long userSeq);
+    int deleteByUserSeq(Long userSeq);
 
     /**
      * 이메일 존재 여부 확인 메서드
@@ -72,5 +72,5 @@ public interface UserMapper {
      * @param user 사용자 정보 객체
      * @return int
      */
-    int updateUser(User user);
+    int updateUserInfo(User user);
 }

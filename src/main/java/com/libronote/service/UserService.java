@@ -43,7 +43,7 @@ public class UserService {
      * @param user 사용자 객체
      */
     public void saveUser(User user){
-        userMapper.insertUser(user);
+        userMapper.save(user);
     }
 
     /**
@@ -63,7 +63,7 @@ public class UserService {
      * @return Optional<User>
      */
     public Optional<User> findUserByUserSeq(Long userSeq){
-        return Optional.ofNullable(userMapper.getUserDetail(userSeq));
+        return Optional.ofNullable(userMapper.findByUserSeq(userSeq));
     }
 
     public List<UserResponse> list(Long page, Long size, String nickname){
@@ -96,7 +96,7 @@ public class UserService {
         user.setNickname(request.getNickname());
 
         try{
-            userMapper.updateUser(user);
+            userMapper.updateUserInfo(user);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -108,7 +108,7 @@ public class UserService {
      * @param userSeq 사용자 기본키
      */
     public void delete(Long userSeq) {
-        userMapper.deleteUser(userSeq);
+        userMapper.deleteByUserSeq(userSeq);
     }
 
     /**

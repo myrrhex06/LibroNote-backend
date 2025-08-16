@@ -1,7 +1,7 @@
 package com.libronote.mapper;
 
 import com.libronote.domain.Book;
-import com.libronote.domain.dto.BookListDto;
+import com.libronote.dto.BookListDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

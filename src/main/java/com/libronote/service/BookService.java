@@ -9,7 +9,7 @@ import com.libronote.controller.response.BookListResponse;
 import com.libronote.controller.response.BookResponse;
 import com.libronote.domain.Book;
 import com.libronote.domain.User;
-import com.libronote.domain.dto.BookListDto;
+import com.libronote.dto.BookListDto;
 import com.libronote.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

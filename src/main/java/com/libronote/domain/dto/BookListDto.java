@@ -1,4 +1,4 @@
-package com.libronote.domain;
+package com.libronote.domain.dto;
 
 import lombok.*;
 
@@ -9,19 +9,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Book {
+public class BookListDto {
 
     private Long bookSeq;
 
     private String title;
 
-    private String content;
-
     private String isbn;
 
-    private String feeling;
-
-    private Long userSeq;
+    private String nickname;
 
     private Long fileSeq;
 

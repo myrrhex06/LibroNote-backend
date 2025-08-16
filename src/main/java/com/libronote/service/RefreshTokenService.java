@@ -77,6 +77,14 @@ public class RefreshTokenService {
     }
 
     /**
+     * 사용 불가 또는 만료된 RefreshToken 제거 메서드
+     *
+     */
+    public void deleteRefreshTokenUseYn(){
+        refreshTokenMapper.deleteByUseYnRefreshToken();
+    }
+
+    /**
      * RefreshToken 사용 여부 확인 처리 메서드
      *
      * @param refreshToken RefreshToken

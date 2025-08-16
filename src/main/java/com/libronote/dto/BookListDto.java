@@ -1,4 +1,4 @@
-package com.libronote.domain.dto;
+package com.libronote.dto;
 
 import lombok.*;
 

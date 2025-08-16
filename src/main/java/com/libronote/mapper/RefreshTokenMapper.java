@@ -61,4 +61,11 @@ public interface RefreshTokenMapper {
      * @return int
      */
     int deleteRefreshTokenByUserSeq(Long userSeq);
+
+    /**
+     * 사용 불가 또는 만료된 RefreshToken 제거 메서드
+     *
+     * @return int
+     */
+    int deleteByUseYnRefreshToken();
 }

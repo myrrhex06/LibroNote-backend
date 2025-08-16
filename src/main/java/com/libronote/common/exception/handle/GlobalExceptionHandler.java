@@ -81,6 +81,20 @@ public class GlobalExceptionHandler {
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(OtherUserBookHandleException.class)
+    public ResponseEntity<ResponseWrapper> handleOtherUserBookUpdateException(OtherUserBookHandleException e) {
+        log.error("OtherUserBookHandleException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(OtherUserHandleException.class)
+    public ResponseEntity<ResponseWrapper> handleOtherUserHandleException(OtherUserHandleException e) {
+        log.error("OtherUserHandleException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
     // 404
 
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -100,6 +114,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity<ResponseWrapper> handleFileNotFoundException(FileNotFoundException e) {
         log.error("FileNotFoundException 발생 : {}", e.getMessage());
+
+        return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<ResponseWrapper> handleBookNotFoundException(BookNotFoundException e) {
+        log.error("BookNotFoundException 발생 : {}", e.getMessage());
 
         return ResponseWrapperUtils.fail(e.getMessage(), HttpStatus.NOT_FOUND);
     }

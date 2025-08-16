@@ -65,6 +65,8 @@ public class FileController {
             }, description = "파일 관련 처리 도중 오류 발생 시 반환")
     })
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @SecurityRequirement(name = "Jwt Auth")
     public ResponseEntity<Resource> show(
             @Parameter(description = "파일 기본키", required = true)
             @RequestParam(name = "fileSeq", required = true) Long fileSeq

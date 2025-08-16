@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.libronote.mapper.BookMapper">
+    <insert id="save" parameterType="Book" useGeneratedKeys="true" keyProperty="bookSeq">
+        INSERT INTO BOOK_INFO(title, content, isbn, feeling, user_seq, file_seq)
+        VALUES(#{title}, #{content}, #{isbn}, #{feeling}, #{userSeq}, #{fileSeq})
+    </insert>
+
+    <select id="findBookByBookSeq" parameterType="Long" resultType="Book">
+        SELECT
+            b.book_seq,
+            b.title,
+            b.content,
+            b.isbn,
+            b.feeling,
+            b.user_seq,
+            b.file_seq,
+            b.created_at,
+            b.modified_at
+        FROM BOOK_INFO b
+        WHERE b.book_seq = #{bookSeq}
+    </select>
+    
+    <select id="findAllBooks" resultType="BookListDto">
+        SELECT
+            b.book_seq,
+            b.title,
+            b.isbn,
+            b.file_seq,
+            b.created_at,
+            b.modified_at,
+            u.nickname
+        FROM BOOK_INFO b
+        LEFT OUTER JOIN USER_INFO u
+        ON b.user_seq = u.user_seq
+        <where>
+            <if test="title != null and title != ''">
+                b.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="nickname != null and nickname != ''">
+                AND u.nickname LIKE CONCAT('%', #{nickname}, '%')
+            </if>
+            <if test="userSeq != null and userSeq != ''">
+                AND b.user_seq = #{userSeq}
+            </if>
+        </where>
+        LIMIT #{page}, #{size}
+    </select>
+
+    <update id="update" parameterType="Book">
+        UPDATE BOOK_INFO
+        SET
+            title = #{title},
+            content = #{content},
+            feeling = #{feeling},
+            isbn = #{isbn},
+            file_seq = #{fileSeq}
+        WHERE book_seq = #{bookSeq}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM BOOK_INFO
+        WHERE book_seq = #{bookSeq}
+    </delete>
+</mapper>

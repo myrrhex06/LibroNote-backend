@@ -1,5 +1,6 @@
 package com.libronote.controller;
 
+import com.libronote.common.custom.CustomUserDetails;
 import com.libronote.common.wrapper.ResponseWrapper;
 import com.libronote.common.wrapper.ResponseWrapperUtils;
 import com.libronote.controller.request.UserUpdateRequest;
@@ -10,9 +11,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,6 +34,8 @@ public class UserInfoController {
             }, description = "성공 시 반환")
     })
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @SecurityRequirement(name = "Jwt Auth")
     public ResponseEntity<ResponseWrapper> list(
             @Parameter(description = "페이지", required = true)
             @RequestParam(name = "page", required = true) Long page,
@@ -47,6 +53,8 @@ public class UserInfoController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "성공 시 반환")
     })
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @SecurityRequirement(name = "Jwt Auth")
     @GetMapping("/detail")
     public ResponseEntity<ResponseWrapper> detail(
             @Parameter(description = "사용자 기본키", required = true)
@@ -61,6 +69,8 @@ public class UserInfoController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "성공 시 반환")
     })
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @SecurityRequirement(name = "Jwt Auth")
     @PatchMapping
     public ResponseEntity<ResponseWrapper> update(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -68,9 +78,10 @@ public class UserInfoController {
                     description = "사용자 정보 수정 요청 객체",
                     content = @Content(schema = @Schema(implementation = UserUpdateRequest.class))
             )
-            @RequestBody UserUpdateRequest request
-    ){
-        userService.update(request);
+            @RequestBody UserUpdateRequest request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            ){
+        userService.updateUser(request, customUserDetails);
         return ResponseWrapperUtils.success("success");
     }
 
@@ -80,12 +91,13 @@ public class UserInfoController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
             }, description = "성공 시 반환")
     })
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @SecurityRequirement(name = "Jwt Auth")
     @DeleteMapping
     public ResponseEntity<ResponseWrapper> delete(
-            @Parameter(description = "사용자 기본키", required = true)
-            @RequestParam(name = "userSeq", required = true) Long userSeq
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        userService.delete(userSeq);
+        userService.deleteUser(customUserDetails);
         return ResponseWrapperUtils.success("success");
     }
 }

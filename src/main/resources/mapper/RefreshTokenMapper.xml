@@ -55,4 +55,10 @@
             SELECT 1 FROM REFRESH_TOKEN_INFO r WHERE r.user_seq = #{userSeq}
         )
     </select>
+
+    <delete id="deleteByUseYnRefreshToken">
+        DELETE FROM REFRESH_TOKEN_INFO
+        WHERE use_yn = 'N'
+        OR expired_at &lt;= NOW();
+    </delete>
 </mapper>

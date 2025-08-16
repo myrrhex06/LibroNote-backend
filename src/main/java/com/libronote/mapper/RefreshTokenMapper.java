@@ -61,4 +61,6 @@ public interface RefreshTokenMapper {
      * @return int
      */
     int deleteRefreshTokenByUserSeq(Long userSeq);
+
+    int deleteByUseYnRefreshToken();
 }

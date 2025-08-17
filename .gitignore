@@ -34,5 +34,7 @@ build/
 
 docker-compose.yml
 **/application.properties
+**/application-local.properties
+**/application-dev.properties
 
 logs

@@ -1,0 +1,112 @@
+package com.libronote.controller;
+
+import com.libronote.common.exception.handle.response.ExceptionResponse;
+import com.libronote.common.wrapper.ResponseWrapper;
+import com.libronote.common.wrapper.ResponseWrapperUtils;
+import com.libronote.controller.request.LoginRequest;
+import com.libronote.controller.request.RefreshRequest;
+import com.libronote.controller.request.RegisterRequest;
+import com.libronote.controller.response.LoginResponse;
+import com.libronote.controller.response.UserResponse;
+import com.libronote.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+@Tag(name = "Auth API Controller", description = "Auth 관련 API Controller")
+public class AuthController {
+
+    private final AuthService authService;
+
+    @Operation(summary = "사용자 회원가입 API", description = "사용자 회원가입 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "회원가입 성공 시 반환"),
+            @ApiResponse(responseCode = "409", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "이미 존재하는 닉네임, 이메일일 경우 반환"),
+            @ApiResponse(responseCode = "500", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "회원가입에 실패했을 경우 반환")
+    })
+    @PostMapping("/register")
+    public ResponseEntity<ResponseWrapper> register(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                description = "사용자 회원가입 요청 객체",
+                required = true,
+                content = @Content(schema = @Schema(implementation = RegisterRequest.class))
+        )
+        @RequestBody RegisterRequest request
+    ){
+        return ResponseWrapperUtils.success("success", authService.register(request));
+    }
+
+    @Operation(summary = "사용자 로그인 API", description = "사용자 로그인 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "성공 시 반환"),
+            @ApiResponse(responseCode = "401", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "비밀번호가 틀렸을 경우 반환"),
+            @ApiResponse(responseCode = "404", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "사용자를 찾지 못했을 경우 반환"),
+            @ApiResponse(responseCode = "500", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "토큰 생성에 실패했을 경우 반환")
+    })
+    @PostMapping("/login")
+    public ResponseEntity<ResponseWrapper> login(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "로그인 요청 객체",
+                    content = @Content(schema = @Schema(implementation = LoginRequest.class))
+            )
+            @RequestBody LoginRequest loginRequest
+    ){
+        return ResponseWrapperUtils.success("success", authService.login(loginRequest));
+    }
+
+    @Operation(summary = "토큰 재발급 API", description = "토큰 재발급 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "성공 시 반환"),
+            @ApiResponse(responseCode = "400", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "사용이 불가능한 토큰/만료된 토큰일 경우 반환"),
+            @ApiResponse(responseCode = "404", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "토큰을 찾을 수 없을 경우 반환"),
+            @ApiResponse(responseCode = "500", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "토큰 생성/업데이트에 문제가 발생했을 경우 반환")
+
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<ResponseWrapper> refresh(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "토큰 재발급 요청 객체",
+                    content = @Content(schema = @Schema(implementation = RefreshRequest.class))
+            )
+            @RequestBody RefreshRequest refreshRequest
+    ){
+
+        return ResponseWrapperUtils.success("success", authService.refresh(refreshRequest));
+    }
+}

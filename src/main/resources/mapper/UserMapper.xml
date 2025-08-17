@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.libronote.mapper.UserMapper">
+    <select id="findByUserSeq" parameterType="Long" resultType="User">
+        SELECT
+        u.user_seq,
+        u.email,
+        u.password,
+        u.role,
+        u.nickname,
+        u.provider,
+        u.created_at,
+        u.modified_at
+        FROM USER_INFO u
+        WHERE u.user_seq = #{userSeq}
+    </select>
+
+    <select id="getUserList" resultType="User">
+        SELECT
+            u.user_seq,
+            u.email,
+            u.role,
+            u.nickname,
+            u.provider,
+            u.created_at,
+            u.modified_at
+        FROM USER_INFO u
+        <where>
+            <if test="nickname != null and nickname != ''">
+                AND u.nickname LIKE CONCAT('%', #{nickname}, '%')
+            </if>
+        </where>
+        ORDER BY u.created_at DESC
+        LIMIT #{page}, #{size}
+    </select>
+
+    <select id="findByEmail" parameterType="string" resultType="User">
+        SELECT
+            u.user_seq,
+            u.email,
+            u.password,
+            u.role,
+            u.nickname,
+            u.provider,
+            u.created_at,
+            u.modified_at
+        FROM USER_INFO u
+        WHERE u.email = #{email}
+    </select>
+
+    <select id="existsEmail" parameterType="string" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM USER_INFO u WHERE u.email = #{email}
+        )
+    </select>
+
+    <select id="existsNickname" parameterType="string" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM USER_INFO u WHERE u.nickname = #{nickname}
+        )
+    </select>
+
+    <insert id="save" parameterType="User" useGeneratedKeys="true" keyProperty="userSeq">
+        INSERT INTO USER_INFO(email, password, role, nickname, provider, created_at, modified_at)
+        VALUES(#{email}, #{password}, #{role}, #{nickname}, #{provider}, NOW(), NOW())
+    </insert>
+
+    <delete id="deleteByUserSeq" parameterType="Long">
+        DELETE FROM USER_INFO u
+        WHERE u.user_seq = #{userSeq}
+    </delete>
+
+    <update id="updateUserInfo" parameterType="User">
+        UPDATE USER_INFO u
+        <set>
+            <if test="nickname != null and nickname != ''">
+                u.nickname = #{nickname},
+            </if>
+            <if test="email != null and email != ''">
+                u.email = #{email},
+            </if>
+        </set>
+        WHERE u.user_seq = #{userSeq}
+    </update>
+</mapper>

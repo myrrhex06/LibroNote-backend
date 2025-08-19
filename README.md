@@ -3,6 +3,7 @@
 LibroNote-Backend는 사용자의 책 기록을 관리하는 RESTful API 서버입니다.
 
 - Spring Boot 3.4.7
+- Mybatis 3.5.17
 - MySQL 8.0
 
 ## 설치 및 실행 

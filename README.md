@@ -1,6 +1,5 @@
 # 📖 LibroNote-backend
 
-## 프로젝트 개요
 LibroNote-Backend는 사용자의 책 기록을 관리하는 RESTful API 서버입니다.
 
 - Spring Boot 3.4.7

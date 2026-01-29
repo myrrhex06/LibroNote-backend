@@ -26,6 +26,9 @@ public class BookListResponse {
     @Schema(description = "ISBN 번호")
     private String isbn;
 
+    @Schema(description = "줄거리")
+    private String content;
+
     @Schema(description = "파일 기본키")
     private Long fileSeq;
 

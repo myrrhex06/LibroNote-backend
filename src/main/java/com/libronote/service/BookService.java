@@ -121,6 +121,7 @@ public class BookService {
                     .bookSeq(book.getBookSeq())
                     .title(book.getTitle())
                     .nickname(book.getNickname())
+                    .content(book.getContent())
                     .isbn(book.getIsbn())
                     .fileSeq(book.getFileSeq())
                     .createdAt(book.getCreatedAt())

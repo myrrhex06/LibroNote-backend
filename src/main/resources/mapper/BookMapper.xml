@@ -29,6 +29,7 @@
             b.book_seq,
             b.title,
             b.isbn,
+            b.content,
             b.file_seq,
             b.created_at,
             b.modified_at,

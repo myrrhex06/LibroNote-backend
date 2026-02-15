@@ -114,7 +114,9 @@ public class BookService {
      * @return List<BookListResponse>
      */
     public List<BookListResponse> list(String title, String nickname, Long userSeq, Long page, Long size) {
-        List<BookListDto> books = bookMapper.findAllBooks(title, nickname, userSeq, page, size);
+        Long pageNumber = page * size;
+
+        List<BookListDto> books = bookMapper.findAllBooks(title, nickname, userSeq, pageNumber, size);
 
         return books.stream().map(book -> {
             return BookListResponse.builder()

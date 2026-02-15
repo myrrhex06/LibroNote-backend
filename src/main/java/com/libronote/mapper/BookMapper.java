@@ -3,6 +3,7 @@ package com.libronote.mapper;
 import com.libronote.domain.Book;
 import com.libronote.dto.BookListDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -35,7 +36,27 @@ public interface BookMapper {
      * @param size 페이지당 보여질 데이터 개수
      * @return List<BookListDto>
      */
-    List<BookListDto> findAllBooks(String title, String nickname, Long userSeq, Long page, Long size);
+    List<BookListDto> findAllBooks(String title, String nickname, Long userSeq, int page, int size);
+
+    /**
+     * 총 책 기록 요소 수 조회 메서드
+     *
+     * @param title 책 제목
+     * @param nickname 닉네임
+     * @param userSeq 사용자 기본키
+     * @return int
+     */
+    int getTotalElement(String title, String nickname, Long userSeq);
+
+    /**
+     * 총 책 기록 페이지수 수 조회 메서드
+     *
+     * @param title 책 제목
+     * @param nickname 닉네임
+     * @param userSeq 사용자 기본키
+     * @return int
+     */
+    int getTotalPage(String title, String nickname, Long userSeq, int size);
 
     /**
      * 책 기록 수정 메서드

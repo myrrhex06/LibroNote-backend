@@ -7,6 +7,7 @@ import com.libronote.controller.request.BookInsertRequest;
 import com.libronote.controller.request.BookUpdateRequest;
 import com.libronote.controller.response.BookListResponse;
 import com.libronote.controller.response.BookResponse;
+import com.libronote.controller.response.PagingResponse;
 import com.libronote.domain.Book;
 import com.libronote.domain.User;
 import com.libronote.dto.BookListDto;
@@ -113,12 +114,14 @@ public class BookService {
      * @param size     페이지당 보여질 데이터 개수
      * @return List<BookListResponse>
      */
-    public List<BookListResponse> list(String title, String nickname, Long userSeq, Long page, Long size) {
-        Long pageNumber = page * size;
-
+    public PagingResponse<List<BookListResponse>> list(String title, String nickname, Long userSeq, int page, int size) {
+        int pageNumber = page * size;
         List<BookListDto> books = bookMapper.findAllBooks(title, nickname, userSeq, pageNumber, size);
 
-        return books.stream().map(book -> {
+        int totalElement = bookMapper.getTotalElement(title, nickname, userSeq);
+        int totalPages = bookMapper.getTotalPage(title, nickname, userSeq, size);
+
+        List<BookListResponse> bookList = books.stream().map(book -> {
             return BookListResponse.builder()
                     .bookSeq(book.getBookSeq())
                     .title(book.getTitle())
@@ -130,6 +133,14 @@ public class BookService {
                     .modifiedAt(book.getModifiedAt())
                     .build();
         }).toList();
+
+        return PagingResponse.<List<BookListResponse>>builder()
+                .content(bookList)
+                .totalPages(totalPages)
+                .totalElements(totalElement)
+                .size(size)
+                .page(page)
+                .build();
     }
 
     /**

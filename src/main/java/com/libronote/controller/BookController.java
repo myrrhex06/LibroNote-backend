@@ -69,9 +69,9 @@ public class BookController {
             @Parameter(description = "사용자 기본키", required = false)
             @RequestParam(name = "userSeq", required = false) Long userSeq,
             @Parameter(description = "페이지 번호", required = true)
-            @RequestParam(name = "page", required = true) Long page,
+            @RequestParam(name = "page", required = true) int page,
             @Parameter(description = "페이지당 보여질 데이터 개수", required = true)
-            @RequestParam(name = "size", required = true) Long size
+            @RequestParam(name = "size", required = true) int size
     ){
         return ResponseWrapperUtils.success("success", bookService.list(title, nickname, userSeq, page, size));
     }

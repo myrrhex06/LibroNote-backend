@@ -33,6 +33,7 @@
             b.file_seq,
             b.created_at,
             b.modified_at,
+            b.feeling,
             u.nickname
         FROM BOOK_INFO b
         LEFT OUTER JOIN USER_INFO u

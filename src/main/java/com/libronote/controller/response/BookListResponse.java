@@ -29,6 +29,9 @@ public class BookListResponse {
     @Schema(description = "줄거리")
     private String content;
 
+    @Schema(description = "감상평")
+    private String feeling;
+
     @Schema(description = "파일 기본키")
     private Long fileSeq;
 

@@ -21,6 +21,8 @@ public class BookListDto {
 
     private String content;
 
+    private String feeling;
+
     private Long fileSeq;
 
     private LocalDateTime createdAt;

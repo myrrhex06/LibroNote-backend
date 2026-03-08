@@ -1,6 +1,7 @@
 package com.libronote.mapper;
 
 import com.libronote.domain.User;
+import com.libronote.dto.UserDetailDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -73,4 +74,12 @@ public interface UserMapper {
      * @return int
      */
     int updateUserInfo(User user);
+
+    /**
+     * 사용자 상제 정보 조회 메서드
+     *
+     * @param userSeq 사용자 SEQ
+     * @return UserDetailDto
+     */
+    UserDetailDto getUserDetail(Long userSeq);
 }

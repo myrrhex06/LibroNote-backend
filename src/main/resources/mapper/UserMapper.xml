@@ -85,4 +85,20 @@
         </set>
         WHERE u.user_seq = #{userSeq}
     </update>
+
+    <select id="getUserDetail" parameterType="Long" resultType="UserDetailDto">
+        SELECT
+            u.user_seq,
+            u.email,
+            u.nickname,
+            (
+                SELECT COUNT(*)
+                FROM BOOK_INFO b
+                WHERE b.user_seq = u.user_seq
+            ) AS total_books,
+            u.created_at,
+            u.modified_at
+        FROM USER_INFO u
+        WHERE u.user_seq = #{userSeq}
+    </select>
 </mapper>

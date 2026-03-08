@@ -3,8 +3,10 @@ package com.libronote.service;
 import com.libronote.common.custom.CustomUserDetails;
 import com.libronote.common.exception.OtherUserHandleException;
 import com.libronote.controller.request.UserUpdateRequest;
+import com.libronote.controller.response.UserDetailResponse;
 import com.libronote.controller.response.UserResponse;
 import com.libronote.domain.User;
+import com.libronote.dto.UserDetailDto;
 import com.libronote.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -140,18 +142,17 @@ public class UserService {
      * @param userSeq 사용자 기본키
      * @return UserResponse
      */
-    public UserResponse detail(Long userSeq) {
-        User user = findUserByUserSeq(userSeq)
+    public UserDetailResponse detail(Long userSeq) {
+        UserDetailDto dto = Optional.ofNullable(userMapper.getUserDetail(userSeq))
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        return UserResponse.builder()
-                .userSeq(user.getUserSeq())
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .role(user.getRole())
-                .provider(user.getProvider())
-                .createdAt(user.getCreatedAt())
-                .modifiedAt(user.getModifiedAt())
+        return UserDetailResponse.builder()
+                .userSeq(dto.getUserSeq())
+                .email(dto.getEmail())
+                .nickname(dto.getNickname())
+                .totalBooks(dto.getTotalBooks())
+                .createdAt(dto.getCreatedAt())
+                .modifiedAt(dto.getModifiedAt())
                 .build();
     }
 }

@@ -146,4 +146,18 @@ public class AuthService {
                 .refreshToken(refreshToken.getTokenValue())
                 .build();
     }
+
+    /**
+     * 로그아웃 처리 메서드
+     *
+     * @param customUserDetails 인증된 사용자 객체
+     */
+    public void logout(CustomUserDetails customUserDetails) {
+        String email = customUserDetails.getUsername();
+
+        User user = userService.findUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        refreshTokenService.deleteRefreshTokenByUserSeq(user.getUserSeq());
+    }
 }

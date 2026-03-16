@@ -125,4 +125,13 @@ public class RefreshTokenService {
             unUseRefreshToken(findedRefreshToken.getTokenSeq());
         }
     }
+
+    /**
+     * 사용자의 RefreshToken 제거
+     *
+     * @param userSeq 사용자 기본키
+     */
+    public void deleteRefreshTokenByUserSeq(Long userSeq){
+        refreshTokenMapper.deleteRefreshTokenByUserSeq(userSeq);
+    }
 }

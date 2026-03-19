@@ -2,6 +2,8 @@ package com.libronote.service;
 
 import com.libronote.common.custom.CustomUserDetails;
 import com.libronote.common.exception.OtherUserHandleException;
+import com.libronote.common.exception.PasswordNotMatchesException;
+import com.libronote.controller.request.UserPasswordUpdateRequest;
 import com.libronote.controller.request.UserUpdateRequest;
 import com.libronote.controller.response.UserDetailResponse;
 import com.libronote.controller.response.UserResponse;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserMapper userMapper;
+    private final PasswordEncodeService passwordEncodeService;
 
     /**
      * 이메일 존재 여부 확인 처리 메서드
@@ -154,5 +157,25 @@ public class UserService {
                 .createdAt(dto.getCreatedAt())
                 .modifiedAt(dto.getModifiedAt())
                 .build();
+    }
+
+    /**
+     * 사용자 비밀번호 변경 처리 메서드
+     *
+     * @param customUserDetails 인증된 사용자 객체
+     * @param request 사용자 비밀번호 변경 요청 객체
+     */
+    public void updatePassword(CustomUserDetails customUserDetails, UserPasswordUpdateRequest request) {
+
+        User user = findUserByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if(!passwordEncodeService.matches(request.getOldPassword(), user.getPassword())){
+            throw new PasswordNotMatchesException("비밀번호가 일치하지 않습니다.");
+        }
+
+        user.setPassword(passwordEncodeService.encode(request.getNewPassword()));
+
+        userMapper.updateUserPassword(user);
     }
 }

@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthService {
 
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncodeService passwordEncodeService;
     private final AuthenticationManager authenticationManager;
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
@@ -52,7 +52,7 @@ public class AuthService {
         User user = User.builder()
                 .email(request.getEmail())
                 .nickname(request.getNickname())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(passwordEncodeService.encode(request.getPassword()))
                 .provider(Provider.LIBRONOTE)
                 .role(Role.ROLE_USER)
                 .build();

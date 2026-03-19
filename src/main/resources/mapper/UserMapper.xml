@@ -86,6 +86,12 @@
         WHERE u.user_seq = #{userSeq}
     </update>
 
+    <update id="updateUserPassword" parameterType="User">
+        UPDATE USER_INFO u
+        SET u.password = #{password}
+        WHERE u.user_seq = #{userSeq}
+    </update>
+
     <select id="getUserDetail" parameterType="Long" resultType="UserDetailDto">
         SELECT
             u.user_seq,

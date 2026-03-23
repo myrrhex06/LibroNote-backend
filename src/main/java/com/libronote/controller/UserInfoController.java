@@ -3,6 +3,7 @@ package com.libronote.controller;
 import com.libronote.common.custom.CustomUserDetails;
 import com.libronote.common.wrapper.ResponseWrapper;
 import com.libronote.common.wrapper.ResponseWrapperUtils;
+import com.libronote.controller.request.UserPasswordUpdateRequest;
 import com.libronote.controller.request.UserUpdateRequest;
 import com.libronote.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,6 +99,28 @@ public class UserInfoController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
         userService.deleteUser(customUserDetails);
+        return ResponseWrapperUtils.success("success");
+    }
+
+    @Operation(summary = "사용자 비밀번호 변경 API", description = "사용자 비밀번호 변경 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "성공 시 반환")
+    })
+    @PatchMapping("/password")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @SecurityRequirement(name = "Jwt Auth")
+    public ResponseEntity<ResponseWrapper> updatePassword(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "사용자 비밀번호 변경 요청 객체",
+                    content = @Content(schema = @Schema(implementation = UserPasswordUpdateRequest.class))
+            )
+            @RequestBody UserPasswordUpdateRequest request
+    ){
+        userService.updatePassword(customUserDetails, request);
         return ResponseWrapperUtils.success("success");
     }
 }

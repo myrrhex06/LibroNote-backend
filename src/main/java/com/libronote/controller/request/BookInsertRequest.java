@@ -13,7 +13,7 @@ public class BookInsertRequest {
     @Schema(description = "책 제목", requiredMode = Schema.RequiredMode.REQUIRED)
     private String title;
 
-    @Schema(description = "책 줄거리", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(description = "책 줄거리", requiredMode = Schema.RequiredMode.REQUIRED)
     private String content;
 
     @Schema(description = "ISBN 번호", requiredMode = Schema.RequiredMode.REQUIRED)

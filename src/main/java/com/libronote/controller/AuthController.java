@@ -1,5 +1,6 @@
 package com.libronote.controller;
 
+import com.libronote.common.custom.CustomUserDetails;
 import com.libronote.common.exception.handle.response.ExceptionResponse;
 import com.libronote.common.wrapper.ResponseWrapper;
 import com.libronote.common.wrapper.ResponseWrapperUtils;
@@ -14,9 +15,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -108,5 +111,23 @@ public class AuthController {
     ){
 
         return ResponseWrapperUtils.success("success", authService.refresh(refreshRequest));
+    }
+
+    @Operation(summary = "로그아웃 API", description = "로그인한 사용자 로그아웃 처리 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "성공 시 반환"),
+            @ApiResponse(responseCode = "404", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseWrapper.class))
+            }, description = "사용자를 찾지 못했을 경우 반환")
+    })
+    @PostMapping("/logout")
+    @SecurityRequirement(name = "Jwt Auth")
+    public ResponseEntity<ResponseWrapper> logout(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        authService.logout(customUserDetails);
+        return ResponseWrapperUtils.success("success");
     }
 }

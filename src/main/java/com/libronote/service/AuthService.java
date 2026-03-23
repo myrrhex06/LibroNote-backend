@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthService {
 
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncodeService passwordEncodeService;
     private final AuthenticationManager authenticationManager;
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
@@ -52,7 +52,7 @@ public class AuthService {
         User user = User.builder()
                 .email(request.getEmail())
                 .nickname(request.getNickname())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(passwordEncodeService.encode(request.getPassword()))
                 .provider(Provider.LIBRONOTE)
                 .role(Role.ROLE_USER)
                 .build();
@@ -145,5 +145,19 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getTokenValue())
                 .build();
+    }
+
+    /**
+     * 로그아웃 처리 메서드
+     *
+     * @param customUserDetails 인증된 사용자 객체
+     */
+    public void logout(CustomUserDetails customUserDetails) {
+        String email = customUserDetails.getUsername();
+
+        User user = userService.findUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        refreshTokenService.deleteRefreshTokenByUserSeq(user.getUserSeq());
     }
 }

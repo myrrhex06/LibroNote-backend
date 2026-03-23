@@ -19,6 +19,10 @@ public class BookListDto {
 
     private String nickname;
 
+    private String content;
+
+    private String feeling;
+
     private Long fileSeq;
 
     private LocalDateTime createdAt;

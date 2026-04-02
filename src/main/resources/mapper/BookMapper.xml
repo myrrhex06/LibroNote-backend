@@ -27,6 +27,7 @@
     <select id="findAllBooks" resultType="BookListDto">
         SELECT
             b.book_seq,
+            b.user_seq,
             b.title,
             b.isbn,
             b.content,

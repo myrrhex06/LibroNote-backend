@@ -17,6 +17,9 @@ public class BookListResponse {
     @Schema(description = "책 기록 기본키")
     private Long bookSeq;
 
+    @Schema(description = "사용자 기본키")
+    private Long userSeq;
+
     @Schema(description = "책 제목")
     private String title;
 

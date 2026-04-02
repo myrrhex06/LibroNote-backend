@@ -13,6 +13,8 @@ public class BookListDto {
 
     private Long bookSeq;
 
+    private Long userSeq;
+
     private String title;
 
     private String isbn;

@@ -124,6 +124,7 @@ public class BookService {
         List<BookListResponse> bookList = books.stream().map(book -> {
             return BookListResponse.builder()
                     .bookSeq(book.getBookSeq())
+                    .userSeq(book.getUserSeq())
                     .title(book.getTitle())
                     .nickname(book.getNickname())
                     .content(book.getContent())
